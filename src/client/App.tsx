@@ -170,6 +170,13 @@ function NewChatDialog({ onClose, onCreate }: { onClose: () => void; onCreate: (
   const [error, setError] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
   useEffect(() => { inputRef.current?.focus(); }, []);
+  useEffect(() => {
+    const closeOnEscape = (event: globalThis.KeyboardEvent) => {
+      if (event.key === 'Escape') { event.preventDefault(); onClose(); }
+    };
+    document.addEventListener('keydown', closeOnEscape);
+    return () => document.removeEventListener('keydown', closeOnEscape);
+  }, [onClose]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

@@ -62,6 +62,9 @@ export class GreenApiClient implements GreenApi {
       'POST', 'checkAccount', { phoneNumber: Number(phoneNumber) },
     );
     if (result?.status === false) {
+      if (/limit/i.test(result.reason ?? '')) {
+        throw new AppError('RATE_LIMITED', 'Превышен лимит проверки номеров. Попробуйте позже.', 429);
+      }
       throw new AppError('INSTANCE_UNAVAILABLE', 'Инстанс пока не готов к проверке номера.', 503);
     }
     return { exist: result?.exist === true, chatId: result?.chatId ?? '' };

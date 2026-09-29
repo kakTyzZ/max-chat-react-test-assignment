@@ -79,6 +79,7 @@ export class SessionManager {
   }
 
   async create(credentials: Credentials): Promise<Session> {
+    this.removeExpired();
     const instanceKey = this.key(credentials);
     if (this.instanceOwners.has(instanceKey)) {
       throw new AppError('INSTANCE_IN_USE', 'Этот инстанс уже подключён в другой сессии.', 409);

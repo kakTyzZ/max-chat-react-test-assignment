@@ -18,6 +18,7 @@ async function mockApi(page: Page) {
     }
     if (path === '/api/session' && method === 'DELETE') { data.connected = false; data.chats = []; return route.fulfill({ status: 204, body: '' }); }
     if (path === '/api/chats' && method === 'POST') {
+      if (body?.phoneNumber?.includes('000')) return respond({ code: 'RECIPIENT_NOT_FOUND', message: 'Аккаунт MAX для этого номера не найден.' }, 404);
       const chat: Chat = { chatId: '10000000', phoneNumber: '79991234567', name: '+79991234567', createdAt: Date.now(), messages: [] };
       if (!data.chats.length) data.chats.push(chat);
       return respond(data.chats[0], 201);
@@ -82,4 +83,18 @@ test('mobile: chat flow stays usable', async ({ page }) => {
   await page.screenshot({ path: 'screenshots/chat-mobile.png', fullPage: true });
   await page.getByRole('button', { name: 'К списку чатов' }).click();
   await expect(page.getByRole('heading', { name: 'Сообщения' })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+});
+
+test('new chat keeps the dialog open when a number is not registered', async ({ page }) => {
+  await mockApi(page);
+  await page.goto('/');
+  await connect(page);
+  await page.locator('.new-chat-button').click();
+  await page.getByLabel('Номер телефона').fill('79990000000');
+  await page.getByRole('dialog').getByRole('button', { name: 'Создать чат' }).click();
+  await expect(page.getByRole('alert')).toHaveText('Аккаунт MAX для этого номера не найден.');
+  await expect(page.getByRole('dialog')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toBeHidden();
 });
