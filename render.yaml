@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: max-chat-react-test-assignment
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeployTrigger: 'off'
