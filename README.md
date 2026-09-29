@@ -68,5 +68,6 @@ npm run test:e2e    # desktop/mobile сценарии в отдельном head
 
 - [Design Document](DESIGN.md)
 - [План реализации](PLAN.md)
+- [Отчёт о проверке](QA_REPORT.md)
 - [Оригинал тестового задания](https://drive.google.com/file/d/1Ut39kkIs0QK-swnCsIPJc6pNqVIVGOD2/view)
 - [Прототип интерфейса MAX](https://web.max.ru/)
